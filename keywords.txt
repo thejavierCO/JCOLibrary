@@ -1,0 +1,50 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Pin	KEYWORD1
+DigitalPin	KEYWORD1
+AnalogPin	KEYWORD1
+DigitalActuator	KEYWORD1
+AnalogActuator	KEYWORD1
+Led	KEYWORD1
+Motor	KEYWORD1
+Move	KEYWORD1
+UltrasonidoSensor	KEYWORD1
+LineSensor	KEYWORD1
+SerialConsole	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init	KEYWORD2
+getPin	KEYWORD2
+setPin	KEYWORD2
+Out	KEYWORD2
+Read	KEYWORD2
+Write	KEYWORD2
+If	KEYWORD2
+On	KEYWORD2
+Off	KEYWORD2
+Switch	KEYWORD2
+Set	KEYWORD2
+useTimeBlink	KEYWORD2
+blink	KEYWORD2
+to	KEYWORD2
+use	KEYWORD2
+left	KEYWORD2
+right	KEYWORD2
+stop	KEYWORD2
+run	KEYWORD2
+back	KEYWORD2
+SendPulse	KEYWORD2
+StatePulse	KEYWORD2
+cm	KEYWORD2
+Value	KEYWORD2
+ReadDigital	KEYWORD2
+ReadAnalog	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
