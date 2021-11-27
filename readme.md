@@ -1,20 +1,20 @@
 # Libreria para arduino de uso general
-----
+
 ## componetes base
 ----
-### DigitalPin
-### AnalogPin
-----
+ DigitalPin
+ AnalogPin
+
 ## Actuadores
 ----
-### DigitalActuator
-### AnalogActuator
-### Led
-### LedPWM
-### Motor
-### Move
-----
+ DigitalActuator
+ AnalogActuator
+ Led
+ LedPWM
+ Motor
+ Move
+
 ## Sensores
 ----
-### UltrasonidoSensor
-### LineSensor
+ UltrasonidoSensor
+ LineSensor
