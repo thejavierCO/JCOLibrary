@@ -4,9 +4,7 @@
 #include "AsyncDelay.h"
 
 //-------------------------------------
-/*
-    Basic Class
-*/
+//    Basic Class
 //-------------------------------------
 class Pin{
   private:
@@ -60,9 +58,7 @@ class AnalogPin: public Pin {
 };
 
 //-------------------------------------
-/*
-    Tools
-*/
+//    Tools
 //-------------------------------------
 
 class DigitalActuator: public DigitalPin{
@@ -98,9 +94,7 @@ class AnalogActuator: public AnalogPin{
 };
 
 //-------------------------------------
-/*
-    Actuadores
-*/
+//    Actuadores
 //-------------------------------------
 
 class Led: public DigitalActuator{
@@ -223,9 +217,7 @@ class Move{
 };
 
 //-------------------------------------
-/*
- * Sensors
-*/
+// Sensors
 //-------------------------------------
 
 class UltrasonidoSensor{
@@ -273,9 +265,7 @@ class LineSensor{
 };
 
 //-------------------------------------
-/*
-    Debug
-*/
+//    Debug
 //-------------------------------------
 
 class SerialConsole{
