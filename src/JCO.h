@@ -1,7 +1,6 @@
 #ifndef JCO_h
 #define JCO_h
 #include "Arduino.h"
-#include "AsyncDelay.h"
 
 //-------------------------------------
 //    Basic Class
@@ -38,13 +37,11 @@ class DigitalPin: public Pin {
     void Write(bool state){
       digitalWrite(this->getPin(),state);
     }
-    bool If(bool value){
-      return this->Read()==value;
-    }
 };
 
 class AnalogPin: public Pin {
   public:
+    AnalogPin():Pin(){}
     AnalogPin(int pin):Pin(pin){};
     long Read(){
       return analogRead(this->getPin());
@@ -52,44 +49,128 @@ class AnalogPin: public Pin {
     void Write(int state){
       analogWrite(this->getPin(),state);
     }
-    bool If(int value){
-      return this->Read()==value;
-    }
 };
 
 //-------------------------------------
 //    Tools
 //-------------------------------------
-
-class DigitalActuator: public DigitalPin{
+class Counter{
+  private:
+    unsigned long _state = 0;
   public:
-    DigitalActuator(int pin):DigitalPin(pin){}
-    void On(){
-      this->Write(true);
+    Counter(){}
+    void add(){
+      this->_state++;
     }
-    void Off(){
-      this->Write(false);
+    void back(){
+      this->_state--;
     }
-    void Switch(){
-      if(this->If(true))this->Off();
-      else if(this->If(false))this->On();
+    void clear(){
+      this->_state=0;  
+    }
+    unsigned long Read(){
+      return this->_state;
     }
 };
 
-class AnalogActuator: public AnalogPin{
-    private:
-        bool _state = false;
+class Timer{
+  private:
+    unsigned long start = 0;
   public:
-    AnalogActuator(int pin):AnalogPin(pin){}
+    Timer(){}
+    Timer(unsigned long start){
+      this->start = start;
+    }
+    void use(unsigned long start){
+      if(this->start!=start){
+        this->start = start;
+      }
+    }
+    unsigned long calc(){
+      return millis()-(this->start);
+    }
+    unsigned long calcMicros(){
+      return micros()-(this->start);
+    }
+};
+
+class DigitalActuator{
+  private:
+    DigitalPin dpin;
+  public:
+    DigitalActuator(){}
+    DigitalActuator(int pin){
+      this->dpin.setPin(pin);
+    }
+    void usePin(int pin){
+      this->dpin.setPin(pin);
+    }
+    void initPin(){
+      this->dpin.Out();
+    }
+    void On(){
+      this->dpin.Write(true);
+    }
+    void Off(){
+      this->dpin.Write(false);
+    }
+    void Switch(){
+      if(this->Read()==true)this->Off();
+      else if(this->Read()==false)this->On();
+    }
+    bool Read(){
+      return this->dpin.Read();
+    }
+};
+
+class AnalogActuator{
+    private:
+        AnalogPin apin;
+  public:
+    AnalogActuator(){}
+    AnalogActuator(int pin){
+      this->apin.setPin(pin);
+    }
+    void usePin(int pin){
+      this->apin.setPin(pin);
+    }
+    void initPin(){
+      this->apin.Out();
+    }
     void Set(int number){
-      this->Write(number);
+      this->apin.Write(number);
     }
-    bool If(int value){
-        return this->_state==value;
+    bool Read(){
+      return this->apin.Read();
     }
-    void Switch(int rangeOn, int rangeOff){
-      if(this->If(false))this->Set(rangeOn);
-      else if(this->If(true))this->Set(rangeOff);
+};
+
+class Button{
+  private:
+    Timer count;
+    DigitalActuator pBtn;
+  public:
+    Button(int pin){
+      this->pBtn.usePin(pin);
+    }
+    init(){
+      this->pBtn.initPin();
+    }
+    start(){
+      if(this->click()==true){
+        this->count.use(millis());
+      }
+    }
+    startMicros(){
+      if(this->click()==true){
+        this->count.use(micros());
+      }
+    }
+    bool click(){
+      return this->pBtn.Read();
+    }
+    int time(){
+      return this->count.calc();
     }
 };
 
@@ -97,75 +178,23 @@ class AnalogActuator: public AnalogPin{
 //    Actuadores
 //-------------------------------------
 
-class Led: public DigitalActuator{
-  private:
-    AsyncDelay TimerLed;
-  public:
-    Led(int pin):DigitalActuator(pin){}
-    void useTimeBlink(unsigned long time){
-      this->TimerLed.start(time, AsyncDelay::MILLIS);
-    }
-    void blink(){
-      if(this->TimerLed.isExpired()){
-        this->Switch();
-        this->TimerLed.repeat();
-      }
-    }
-};
-
-class LedPWM:public AnalogActuator{
-  private:
-    AsyncDelay TimerLed;
-  public:
-    LedPWM(int pin):AnalogActuator(pin){}
-    void to(int time, int start = 0,int end = 0){
-      if(start==0&&end==0)Serial.println("test");
-      else{
-        unsigned long TimeDelay;
-        TimeDelay = time/end;
-        this->TimerLed.start(TimeDelay,AsyncDelay::MILLIS);
-        while(start<end){
-          if(this->TimerLed.isExpired()){
-            this->Set(start);
-            start++;
-            this->TimerLed.repeat();
-          }
-        }
-        TimeDelay = time/start;
-        this->TimerLed.start(TimeDelay,AsyncDelay::MILLIS);
-        while(start>end){
-          if(this->TimerLed.isExpired()){
-            this->Set(start);
-            start--;
-            this->TimerLed.repeat();
-          }
-        }
-        this->TimerLed.restart();
-      }
-    }
-    void blink(int time, int max = 255){
-      this->to(time/2,0,max); 
-      this->to(time/2,max,0);
-    }
-};
-
 class Motor{
   private:
-    DigitalActuator pinLeft = new DigitalActuator(0);
-    DigitalActuator pinRight = new DigitalActuator(0);
+    DigitalActuator pinLeft;
+    DigitalActuator pinRight;
   public:
   Motor(){}
   Motor(int pinLeft,int pinRight){
-    this->pinLeft.setPin(pinLeft);
-    this->pinRight.setPin(pinRight);
+    this->pinLeft.usePin(pinLeft);
+    this->pinRight.usePin(pinRight);
   }
   void use(int pinLeft,int pinRight){
-    this->pinLeft.setPin(pinLeft);
-    this->pinRight.setPin(pinRight);
+    this->pinLeft.usePin(pinLeft);
+    this->pinRight.usePin(pinRight);
   }
   void init(){
-    this->pinLeft.Out();
-    this->pinRight.Out();
+    this->pinLeft.initPin();
+    this->pinRight.initPin();
   }
   void left(){
     this->pinLeft.On();
@@ -225,6 +254,7 @@ class UltrasonidoSensor{
     const float VelocidadSonido = 34000.0;
     DigitalPin TriggerPin;
     DigitalPin EchoPin;
+    Timer time;
   public:
     UltrasonidoSensor(int Tpin,int Epin){
       this->TriggerPin.setPin(Tpin);
@@ -264,29 +294,23 @@ class LineSensor{
     }
 };
 
+class brightnessLevelSensor{
+  private:
+    AnalogPin _pin;
+  public:
+    brightnessLevelSensor(int pin){
+      this->_pin.setPin(pin);
+    }
+    void init(){
+      this->_pin.In();
+    }
+    unsigned long Read(){
+      return this->_pin.Read();
+    }
+};
 //-------------------------------------
 //    Debug
 //-------------------------------------
-
-class SerialConsole{
-  private:
-    int _baud = 9600;
-  public:
-    SerialConsole(){}
-    SerialConsole(int baud){
-      if(baud==0)this->_baud = 9600;
-      else this->_baud = baud;
-    }
-    void init(){
-      Serial.begin(this->_baud);
-    }
-    void ReadDigital(DigitalActuator obj){
-      Serial.println(obj.Read());
-    }
-    void ReadAnalog(AnalogActuator obj){
-      Serial.println(obj.Read());
-    }
-};
 
 
 #endif
