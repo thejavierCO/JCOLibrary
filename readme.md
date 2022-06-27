@@ -1,12 +1,10 @@
 # Libreria para arduino de uso general
 
 ## componetes base
-----
  - DigitalPin
  - AnalogPin
 
 ## Actuadores
-----
  - Counter
  - Timer
  - DigitalActuator
@@ -15,7 +13,6 @@
  - Move
 
 ## Sensores
-----
  - UltrasonidoSensor
  - LineSensor
  - brightnessLevelSensor
