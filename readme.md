@@ -2,19 +2,20 @@
 
 ## componetes base
 ----
- DigitalPin
- AnalogPin
+ - DigitalPin
+ - AnalogPin
 
 ## Actuadores
 ----
- DigitalActuator
- AnalogActuator
- Led
- LedPWM
- Motor
- Move
+ - Counter
+ - Timer
+ - DigitalActuator
+ - AnalogActuator
+ - Motor
+ - Move
 
 ## Sensores
 ----
- UltrasonidoSensor
- LineSensor
+ - UltrasonidoSensor
+ - LineSensor
+ - brightnessLevelSensor
