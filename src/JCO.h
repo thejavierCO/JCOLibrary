@@ -2,6 +2,8 @@
 #define JCO_h
 #include "Arduino.h"
 
+
+
 //-------------------------------------
 //    Basic Class
 //-------------------------------------
@@ -121,6 +123,9 @@ class DigitalActuator{
     bool Read(){
       return this->dpin.Read();
     }
+    void Write(bool state){
+      this->dpin.Write(state);
+    }
 };
 
 class AnalogActuator{
@@ -145,38 +150,38 @@ class AnalogActuator{
     }
 };
 
-class Button{
-  private:
-    Timer count;
-    DigitalActuator pBtn;
-  public:
-    Button(int pin){
-      this->pBtn.usePin(pin);
-    }
-    init(){
-      this->pBtn.initPin();
-    }
-    start(){
-      if(this->click()==true){
-        this->count.use(millis());
-      }
-    }
-    startMicros(){
-      if(this->click()==true){
-        this->count.use(micros());
-      }
-    }
-    bool click(){
-      return this->pBtn.Read();
-    }
-    int time(){
-      return this->count.calc();
-    }
-};
 
 //-------------------------------------
 //    Actuadores
 //-------------------------------------
+
+class Relay{
+  private:
+    bool _invert = false;
+    DigitalActuator _pin;
+  public:
+    Relay(){}
+    Relay(int pin){this->_pin.usePin(pin);}
+    void invert(){this->_invert = true;}
+    void init(){
+      this->_pin.initPin();
+    }
+    void On(){
+      if(this->_invert==true)this->_pin.Off();
+      else this->_pin.On();
+    }
+    void Off(){
+      if(this->_invert==true)this->_pin.On();
+      else this->_pin.Off();
+    }
+    void useState(bool state){
+      if(state==true)this->_pin.On();
+      else this->_pin.Off();
+    }
+    bool state(){
+      return this->_pin.Read();
+    }
+};
 
 class Motor{
   private:
@@ -248,6 +253,43 @@ class Move{
 //-------------------------------------
 // Sensors
 //-------------------------------------
+
+
+class Button{
+  private:
+    Timer count;
+    DigitalPin pBtn;
+    bool block = false;
+  public:
+    Button(int pin){
+      this->pBtn.setPin(pin);
+    }
+    init(){
+      this->pBtn.In();
+    }
+    void start(){
+      if(this->pBtn.Read()){
+        if(this->block==false){
+          this->count.use(millis());
+          this->block = true;
+        }
+      }else this->block = false;
+    }
+    void startMicros(){
+      if(this->click()){
+        if(this->block==false){
+          this->count.use(micros());
+          this->block = true;
+        }
+      }else this->block = false;
+    }
+    bool click(){
+      return this->time()>25;
+    }
+    int time(){
+      return this->count.calc();
+    }
+};
 
 class UltrasonidoSensor{
   private:
