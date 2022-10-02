@@ -1,78 +1,45 @@
 #ifndef JCO_h
 #define JCO_h
+
 #include "Arduino.h"
 
-
-
-//-------------------------------------
-//    Basic Class
-//-------------------------------------
 class Pin{
   private:
-    int _pin = 0;
+    uint8_t _pin = 0;
   public:
-    Pin(int pin){
-      this->_pin = pin;
-    }
-    Pin(void){}
-    int getPin(){
-      return this->_pin;
-    }
-    void setPin(int pin){
-      this->_pin = pin;
-    }
-    void Out(){
-      pinMode(this->_pin,OUTPUT);
-    }
-    void In(){
-      pinMode(this->_pin,INPUT);
-    }
+    Pin(uint8_t pin);
+    Pin(void);
+    uint8_t getPin();
+    void setPin(uint8_t pin);
+    void Out();
+    void In();
 };
 
 class DigitalPin: public Pin {
   public:
-    DigitalPin():Pin(){}
-    DigitalPin(int pin):Pin(pin){};
-    bool Read(){
-      return digitalRead(this->getPin());
-    }
-    void Write(bool state){
-      digitalWrite(this->getPin(),state);
-    }
+    DigitalPin():Pin();
+    DigitalPin(uint8_t pin):Pin(pin);
+    bool Read();
+    void Write(uint8_t state);
 };
 
 class AnalogPin: public Pin {
   public:
-    AnalogPin():Pin(){}
-    AnalogPin(int pin):Pin(pin){};
-    long Read(){
-      return analogRead(this->getPin());
-    }
-    void Write(int state){
-      analogWrite(this->getPin(),state);
-    }
+    AnalogPin():Pin();
+    AnalogPin(uint8_t pin):Pin(pin);
+    long Read();
+    void Write(uint8_t state);
 };
 
-//-------------------------------------
-//    Tools
-//-------------------------------------
 class Counter{
   private:
     unsigned long _state = 0;
   public:
-    Counter(){}
-    void add(){
-      this->_state++;
-    }
-    void back(){
-      this->_state--;
-    }
-    void clear(){
-      this->_state=0;  
-    }
-    unsigned long Read(){
-      return this->_state;
-    }
+    Counter();
+    void add();
+    void back();
+    void clear();
+    unsigned long Read();
 };
 
 class Timer{
@@ -80,80 +47,38 @@ class Timer{
     unsigned long start = 0;
   public:
     Timer(){}
-    Timer(unsigned long start){
-      this->start = start;
-    }
-    void use(unsigned long start){
-      if(this->start!=start){
-        this->start = start;
-      }
-    }
-    unsigned long calc(){
-      return millis()-(this->start);
-    }
-    unsigned long calcMicros(){
-      return micros()-(this->start);
-    }
+    Timer(unsigned long start);
+    void use(unsigned long start);
+    unsigned long calc();
+    unsigned long calcMicros();
 };
 
 class DigitalActuator{
   private:
     DigitalPin dpin;
   public:
-    DigitalActuator(){}
-    DigitalActuator(int pin){
-      this->dpin.setPin(pin);
-    }
-    void usePin(int pin){
-      this->dpin.setPin(pin);
-    }
-    void initPin(){
-      this->dpin.Out();
-    }
-    void On(){
-      this->dpin.Write(true);
-    }
-    void Off(){
-      this->dpin.Write(false);
-    }
-    void Switch(){
-      if(this->Read()==true)this->Off();
-      else if(this->Read()==false)this->On();
-    }
-    bool Read(){
-      return this->dpin.Read();
-    }
-    void Write(bool state){
-      this->dpin.Write(state);
-    }
+    DigitalActuator();
+    DigitalActuator(uint8_t pin);
+    void usePin(uint8_t pin);
+    void initPin();
+    void On();
+    void Off();
+    void Switch();
+    bool Read();
+    void Write(bool state);
 };
 
 class AnalogActuator{
     private:
         AnalogPin apin;
   public:
-    AnalogActuator(){}
-    AnalogActuator(int pin){
-      this->apin.setPin(pin);
-    }
-    void usePin(int pin){
-      this->apin.setPin(pin);
-    }
-    void initPin(){
-      this->apin.Out();
-    }
-    void Set(int number){
-      this->apin.Write(number);
-    }
-    bool Read(){
-      return this->apin.Read();
-    }
+    AnalogActuator();
+    AnalogActuator(uint8_t pin);
+    void usePin(uint8_t pin);
+    void initPin();
+    void Set(uint8_t number);
+    bool Read();
 };
-
-
-//-------------------------------------
-//    Actuadores
-//-------------------------------------
 
 class Relay{
   private:
@@ -161,26 +86,13 @@ class Relay{
     DigitalActuator _pin;
   public:
     Relay(){}
-    Relay(int pin){this->_pin.usePin(pin);}
-    void invert(){this->_invert = true;}
-    void init(){
-      this->_pin.initPin();
-    }
-    void On(){
-      if(this->_invert==true)this->_pin.Off();
-      else this->_pin.On();
-    }
-    void Off(){
-      if(this->_invert==true)this->_pin.On();
-      else this->_pin.Off();
-    }
-    void useState(bool state){
-      if(state==true)this->_pin.On();
-      else this->_pin.Off();
-    }
-    bool state(){
-      return this->_pin.Read();
-    }
+    Relay(uint8_t pin);
+    void invert();
+    void init();
+    void On();
+    void Off();
+    void useState(bool state);
+    bool state();
 };
 
 class Motor{
@@ -188,31 +100,13 @@ class Motor{
     DigitalActuator pinLeft;
     DigitalActuator pinRight;
   public:
-  Motor(){}
-  Motor(int pinLeft,int pinRight){
-    this->pinLeft.usePin(pinLeft);
-    this->pinRight.usePin(pinRight);
-  }
-  void use(int pinLeft,int pinRight){
-    this->pinLeft.usePin(pinLeft);
-    this->pinRight.usePin(pinRight);
-  }
-  void init(){
-    this->pinLeft.initPin();
-    this->pinRight.initPin();
-  }
-  void left(){
-    this->pinLeft.On();
-    this->pinRight.Off();
-  }
-  void right(){
-    this->pinLeft.Off();
-    this->pinRight.On();
-  }
-  void stop(){
-    this->pinLeft.Off();
-    this->pinRight.Off();
-  }
+  Motor();
+  Motor(uint8_t pinLeft,uint8_t pinRight);
+  void use(uint8_t pinLeft,uint8_t pinRight);
+  void init();
+  void left();
+  void right();
+  void stop();
 };
 
 class Move{
@@ -220,40 +114,14 @@ class Move{
     Motor MA;
     Motor MB;
   public:
-    Move(Motor ML,Motor MR){
-      this->MA = ML;
-      this->MB = MR;
-    }
-    void init(){
-      this->MA.init();
-      this->MB.init();
-    }
-    void Run(){
-      this->MA.left();
-      this->MB.left();
-    }
-    void Back(){
-      this->MA.right();
-      this->MB.right();
-    }
-    void Stop(){
-      this->MA.stop();
-      this->MB.stop();
-    }
-    void Left(){
-      this->MA.left();
-      this->MB.right();
-    }
-    void Right(){
-      this->MA.right();
-      this->MB.left();
-    }
+    Move(Motor ML,Motor MR);
+    void init();
+    void Run();
+    void Back();
+    void Stop();
+    void Left();
+    void Right();
 };
-
-//-------------------------------------
-// Sensors
-//-------------------------------------
-
 
 class Button{
   private:
@@ -261,98 +129,44 @@ class Button{
     DigitalPin pBtn;
     bool block = false;
   public:
-    Button(int pin){
-      this->pBtn.setPin(pin);
-    }
-    init(){
-      this->pBtn.In();
-    }
-    void start(){
-      if(this->pBtn.Read()){
-        if(this->block==false){
-          this->count.use(millis());
-          this->block = true;
-        }
-      }else this->block = false;
-    }
-    void startMicros(){
-      if(this->click()){
-        if(this->block==false){
-          this->count.use(micros());
-          this->block = true;
-        }
-      }else this->block = false;
-    }
-    bool click(){
-      return this->time()>25;
-    }
-    int time(){
-      return this->count.calc();
-    }
+    Button(uint8_t pin);
+    init();
+    void start();
+    void startMicros();
+    bool click(),
+    uint8_t time();
 };
 
 class UltrasonidoSensor{
   private:
-    const float VelocidadSonido = 34000.0;
+    const float VelocidadSonido;
     DigitalPin TriggerPin;
     DigitalPin EchoPin;
     Timer time;
   public:
-    UltrasonidoSensor(int Tpin,int Epin){
-      this->TriggerPin.setPin(Tpin);
-      this->EchoPin.setPin(Epin);
-    }
-    void init(){
-      this->TriggerPin.Out();
-      this->EchoPin.In();
-    }
-    void SendPulse(){
-      this->TriggerPin.Write(false);
-      delayMicroseconds(2);
-      this->TriggerPin.Write(true);
-      delayMicroseconds(10);
-      this->TriggerPin.Write(false);
-    }
-    unsigned long StatePulse(){
-     return pulseIn(this->EchoPin.getPin(), HIGH);
-    }
-    float cm(){
-      return this->StatePulse() * 0.000001 * this->VelocidadSonido / 2.0;
-    }
+    UltrasonidoSensor(uint8_t Tpin,uint8_t Epin);
+    void init();
+    void SendPulse();
+    unsigned long StatePulse();
+    float cm();
 };
 
 class LineSensor{
   private:
     DigitalPin PinS;
   public:
-    LineSensor(int pin){
-      this->PinS.setPin(pin);
-    }
-    void init(){
-      this->PinS.In();
-    }
-    bool Value(){
-      return this->PinS.Read();
-    }
+    LineSensor(uint8_t pin);
+    void init();
+    bool Value();
 };
 
 class brightnessLevelSensor{
   private:
     AnalogPin _pin;
   public:
-    brightnessLevelSensor(int pin){
-      this->_pin.setPin(pin);
-    }
-    void init(){
-      this->_pin.In();
-    }
-    unsigned long Read(){
-      return this->_pin.Read();
-    }
+    brightnessLevelSensor(uint8_t pin);
+    void init();
+    unsigned long Read();
 };
-//-------------------------------------
-//    Debug
-//-------------------------------------
-
 
 #endif
