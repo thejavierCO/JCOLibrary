@@ -5,7 +5,7 @@
 
 class Pin{
   private:
-    uint8_t _pin = 0;
+    uint8_t _pin;
   public:
     Pin(uint8_t pin);
     Pin(void);
@@ -33,7 +33,7 @@ class AnalogPin: public Pin {
 
 class Counter{
   private:
-    unsigned long _state = 0;
+    unsigned long _state;
   public:
     Counter();
     void add();
@@ -44,9 +44,9 @@ class Counter{
 
 class Timer{
   private:
-    unsigned long start = 0;
+    unsigned long start;
   public:
-    Timer(){}
+    Timer();
     Timer(unsigned long start);
     void use(unsigned long start);
     unsigned long calc();
@@ -82,7 +82,7 @@ class AnalogActuator{
 
 class Relay{
   private:
-    bool _invert = false;
+    bool _invert;
     DigitalActuator _pin;
   public:
     Relay(){}
