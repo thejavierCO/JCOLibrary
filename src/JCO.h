@@ -1,5 +1,6 @@
 #ifndef JCO_h
 #define JCO_h
+
 #include "Arduino.h"
 
 
@@ -154,6 +155,30 @@ class AnalogActuator{
 //-------------------------------------
 //    Actuadores
 //-------------------------------------
+
+class Led{
+  private:
+    DigitalActuator _pinD;
+    AnalogActuator _pinA;
+  public:
+    Led(int pin){
+      _pinA.usePin(pin);
+      _pinD.usePin(pin);
+    }
+    void start(){
+      _pinA.initPin();
+      _pinD.initPin();
+    }
+    void On(){
+      _pinD.On();
+    }
+    void Off(){
+      _pinD.Off();
+    }
+    void Use(int value){
+      _pinA.Set(value);
+    }
+};
 
 class Relay{
   private:
