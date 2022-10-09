@@ -169,6 +169,12 @@ class Led{
       _pinA.initPin();
       _pinD.initPin();
     }
+    int Read(){
+      return _pinA.Read();
+    }
+    bool State(){
+      return _pinD.Read();
+    }
     void On(){
       _pinD.On();
     }
@@ -289,7 +295,7 @@ class Button{
     Button(int pin){
       this->pBtn.setPin(pin);
     }
-    init(){
+    void init(){
       this->pBtn.In();
     }
     void start(){
